@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 class TaskController extends Controller
@@ -16,23 +17,13 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $todoList = Collection::make([
-            'title' => 'Test Title',
-            'description' => 'Test Description'
-        ]);
-
+        $categories = Task::pluck('category_name')->unique();
+        foreach ($categories as $category) {
+            $tasks[$category] = Task::where('category_name', $category)->get();
+        }
         $currentDate = Carbon::now()->format('Y-m-d');
-        return view('index', compact('todoList', 'currentDate'));
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-        //
+        return view('index', compact('categories', 'tasks', 'currentDate'));
     }
 
     /**
@@ -45,39 +36,20 @@ class TaskController extends Controller
     {
         $request->validate([
             'title' => ['required', 'string', 'max:25'],
-            'description' => ['string'],
-            'category_name' => ['required', ''],
+            'description' => ['nullable', 'string'],
+            'category_name' => ['required', 'string'],
             'due_date' => ['required', 'date'],
         ]);
 
-        Task::create($request->only([
-            'title', 'description', 'category_name', 'due_date'
-        ]));
+        Task::create(
+            array_merge(
+                $request->only(['title', 'description', 'due_date']),
+                ['category_name' => strtolower($request->get('category_name'))]
+            )
+        );
 
         return back()
-                ->withInput(['success' => 'Task added successfully.']);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+            ->withInput(['success' => 'Task added successfully.']);
     }
 
     /**
@@ -87,19 +59,34 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Task $task)
     {
-        //
+        $request->validate([
+            'title' => ['required', 'string', 'max:25'],
+            'description' => ['nullable', 'string'],
+            'category_name' => ['required', 'string'],
+            'due_date' => ['required', 'date'],
+        ]);
+
+        $task->update(
+            array_merge(
+                $request->only(['title', 'description', 'due_date']),
+                ['category_name' => strtolower($request->get('category_name'))]
+            )
+        );
+
+        return back()
+            ->withInput(['success' => 'Task updated successfully.']);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Delete item from database
      */
-    public function destroy($id)
+
+    protected function delete(Task $task)
     {
-        //
+        $task->delete();
+        return back()
+            ->withInput(['success' => 'Task deleted successfully.']); 
     }
 }

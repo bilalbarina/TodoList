@@ -15,4 +15,8 @@ use App\Http\Controllers\TodoListController;
 |
 */
 
-Route::resource('/', TaskController::class)->name('index', 'task');
+Route::resource('/tasks', TaskController::class)->only([
+    'index', 'store', 'update'
+]);
+
+Route::get('/tasks/{task}/delete', [TaskController::class, 'delete'])->name('task.delete');
