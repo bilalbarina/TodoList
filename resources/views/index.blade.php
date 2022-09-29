@@ -48,17 +48,17 @@
         </div>
 
         <div class="space-y-8">
-            @foreach ($categories as $category)
+            @foreach ($categories as $category => $tasks)
                 <ul class="space-y-0.5 mt-4">
                     <div class="inline-flex items-center space-x-2">
                         <div class="text-xl font-bold mb-2">
                             {{ ucwords($category) }}
                         </div>
                         <span class="text-slate-400 text-base font-semibold pb-2">
-                            {{ $tasks[$category]->count() }}
+                            {{ $tasks->count() }}
                         </span>
                     </div>
-                    @foreach ($tasks[$category] as $task)
+                    @foreach ($tasks as $task)
                         <li>
                             <div class="bg-white border border-slate-200 rounded-md px-4 py-2">
                                 <div class="flex justify-between items-center text-sm px-4">

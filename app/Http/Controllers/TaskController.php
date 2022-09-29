@@ -17,14 +17,10 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = [];
-        $categories = Task::pluck('category_name')->unique();
-        foreach ($categories as $category) {
-            $tasks[$category] = Task::where('category_name', $category)->get();
-        }
+        $categories = Task::all()->groupBy('category_name');
         $currentDate = Carbon::now()->format('Y-m-d');
 
-        return view('index', compact('categories', 'tasks', 'currentDate'));
+        return view('index', compact('categories', 'currentDate'));
     }
 
     /**
