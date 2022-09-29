@@ -110,8 +110,12 @@
                     @endforeach
                 </ul>
             @endforeach
-
         </div>
+        @if (empty($tasks))
+        <div class="border border-green-600 text-green-600 w-full p-2 text-center rounded-md mt-4">
+            No tasks available.
+        </div>
+        @endif
     </div>
 </body>
 </html>

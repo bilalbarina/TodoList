@@ -15,6 +15,8 @@ use App\Http\Controllers\TodoListController;
 |
 */
 
+Route::redirect('/', '/tasks');
+
 Route::resource('/tasks', TaskController::class)->only([
     'index', 'store', 'update'
 ]);

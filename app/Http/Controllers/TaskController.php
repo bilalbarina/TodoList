@@ -17,6 +17,7 @@ class TaskController extends Controller
      */
     public function index()
     {
+        $tasks = [];
         $categories = Task::pluck('category_name')->unique();
         foreach ($categories as $category) {
             $tasks[$category] = Task::where('category_name', $category)->get();
